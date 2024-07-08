@@ -13,6 +13,7 @@ class Solution:
         while x:
             # Get the leftmost digit
             left = x // div
+            
             # Get the rightmost digit
             right = x % 10
 
