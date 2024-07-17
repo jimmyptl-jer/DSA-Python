@@ -107,3 +107,656 @@ In this example, we start by trying to solve the original problem (`fib(n)`) and
 
 By understanding both approaches, you can choose the one that best fits the problem at hand and the constraints you are working with.
 
+Converting a recursive solution to a dynamic programming solution involves transforming the recursive calls into an iterative process that uses a table to store intermediate results. This conversion can be approached in two main ways: top-down with memoization and bottom-up with tabulation.
+
+Here is a step-by-step guide to converting a recursive solution into a dynamic programming solution:
+
+### Steps to Convert Recursive Code to Dynamic Programming
+
+1. **Identify the Subproblems**:
+   Determine what subproblems are being solved recursively and how they overlap.
+
+2. **Define the Recurrence Relation**:
+   Express the solution to the problem in terms of solutions to smaller subproblems.
+
+3. **Choose the DP Approach**:
+   Decide whether to use a top-down (memoization) or bottom-up (tabulation) approach.
+
+4. **Create a Storage Structure**:
+   Allocate a table (array or matrix) to store the results of subproblems.
+
+5. **Iterate and Fill the Table**:
+   Fill the table iteratively in the bottom-up approach or recursively in the top-down approach with memoization.
+
+6. **Extract the Final Solution**:
+   Retrieve the solution to the original problem from the table.
+
+### Example: Converting Recursive Fibonacci to DP
+
+#### Recursive Solution
+```python
+def fib_recursive(n):
+    if n <= 1:
+        return n
+    return fib_recursive(n - 1) + fib_recursive(n - 2)
+```
+
+#### Top-Down with Memoization
+1. **Identify Subproblems**: `fib(n)` depends on `fib(n-1)` and `fib(n-2)`.
+2. **Recurrence Relation**: `fib(n) = fib(n-1) + fib(n-2)`.
+
+```python
+def fib_top_down(n, memo=None):
+    if memo is None:
+        memo = {}
+    if n in memo:
+        return memo[n]
+    if n <= 1:
+        return n
+    memo[n] = fib_top_down(n - 1, memo) + fib_top_down(n - 2, memo)
+    return memo[n]
+```
+
+#### Bottom-Up with Tabulation
+1. **Identify Subproblems**: Same as above.
+2. **Recurrence Relation**: Same as above.
+3. **Create Storage Structure**: Allocate an array to store Fibonacci numbers up to `n`.
+
+```python
+def fib_bottom_up(n):
+    if n <= 1:
+        return n
+    dp = [0] * (n + 1)
+    dp[1] = 1
+    for i in range(2, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+    return dp[n]
+```
+## Climbing Stairs Problem with Dynamic Programming
+
+In this article, we'll discuss how to solve the "Climbing Stairs" problem using dynamic programming. This problem is a classic example of how dynamic programming can be used to count the number of ways to achieve a goal, specifically when the number of ways to reach a particular state depends on previously computed states.
+
+### Problem Statement
+
+Given a number of stairs `n`, starting from the 0th stair, we need to climb to the `N`th stair. At any time, we can climb either one or two steps. We need to return the total number of distinct ways to reach the `N`th stair.
+
+### Identifying a Dynamic Programming Problem
+
+We can identify this as a dynamic programming problem because:
+
+1. **Count the total number of ways**: The problem asks us to count the number of distinct ways to reach the Nth stair.
+2. **Overlapping subproblems**: To reach a stair, we can come from either the previous stair or the one before it, which involves recalculating some results multiple times.
+
+### Steps to Solve the Problem
+
+1. **Represent the problem in terms of indexes**: Consider `n` stairs as indexes from 0 to N.
+2. **Possible choices at each index**: At each stair, you can either take one step or two steps.
+3. **Return the sum of all choices**: Since the problem asks to count all the ways, we'll sum up the possible ways to reach each stair.
+
+### Recursive Solution
+
+We'll start with a recursive solution that will later help us understand the transition to a dynamic programming solution.
+
+#### Recursive Function
+
+```python
+def count_ways_recursive(n):
+    if n == 0:
+        return 1
+    if n == 1:
+        return 1
+    return count_ways_recursive(n - 1) + count_ways_recursive(n - 2)
+```
+
+### Top-Down Approach with Memoization
+
+In the top-down approach, we use memoization to store the results of subproblems to avoid redundant calculations.
+
+```python
+def count_ways_top_down(n, memo=None):
+    if memo is None:
+        memo = {}
+    if n in memo:
+        return memo[n]
+    if n == 0:
+        return 1
+    if n == 1:
+        return 1
+    memo[n] = count_ways_top_down(n - 1, memo) + count_ways_top_down(n - 2, memo)
+    return memo[n]
+
+# Example usage:
+n = 3
+print(count_ways_top_down(n))  # Output: 3
+```
+
+### Bottom-Up Approach with Tabulation
+
+In the bottom-up approach, we use a table (array) to store the results of subproblems iteratively.
+
+```python
+def count_ways_bottom_up(n):
+    if n == 0:
+        return 1
+    if n == 1:
+        return 1
+    dp = [0] * (n + 1)
+    dp[0] = 1
+    dp[1] = 1
+    for i in range(2, n + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]
+    return dp[n]
+
+# Example usage:
+n = 3
+print(count_ways_bottom_up(n))  # Output: 3
+```
+
+### Space Optimization
+
+We observe that to compute `dp[i]`, we only need the last two values `dp[i-1]` and `dp[i-2]`. Therefore, we can optimize space by using two variables instead of an array.
+
+```python
+def count_ways_optimized(n):
+    if n == 0:
+        return 1
+    if n == 1:
+        return 1
+    prev2 = 1
+    prev = 1
+    for i in range(2, n + 1):
+        current = prev + prev2
+        prev2 = prev
+        prev = current
+    return current
+
+# Example usage:
+n = 3
+print(count_ways_optimized(n))  # Output: 3
+```
+
+### Time and Space Complexity
+
+- **Time Complexity**: O(N) for all approaches, as we are iterating through the stairs once.
+- **Space Complexity**:
+  - Top-Down with Memoization: O(N) for the memoization table.
+  - Bottom-Up with Tabulation: O(N) for the dp array.
+  - Space Optimized: O(1), using constant space.
+
+By understanding these approaches, you can efficiently solve the climbing stairs problem using dynamic programming techniques.
+ 
+Certainly! The "Frog Jump" problem is a classic dynamic programming problem where a frog can jump from the \(i\)th stone to the \((i+1)\)th stone or \((i+2)\)th stone, and we need to find the minimum cost to reach the last stone. The problem can be defined as follows:
+
+### Problem Definition:
+Given an array `height` of length \(n\) where `height[i]` represents the height of the \(i\)th stone, the frog can jump from stone \(i\) to stone \(i+1\) or stone \(i+2\). The cost of a jump is the absolute difference in heights between the stones. Find the minimum cost to reach the last stone starting from the first stone.
+
+### Approach:
+We can solve this problem using dynamic programming. We define `dp[i]` as the minimum cost to reach the \(i\)th stone. The recurrence relation will be:
+
+- If the frog jumps from \(i\) to \(i+1\): `dp[i+1] = dp[i] + abs(height[i+1] - height[i])`
+- If the frog jumps from \(i\) to \(i+2\): `dp[i+2] = dp[i] + abs(height[i+2] - height[i])`
+
+We need to initialize `dp[0] = 0` because there is no cost to start at the first stone.
+
+### Implementation in Python:
+
+```python
+class Solution:
+    def frogJump(self, height):
+        n = len(height)
+        if n == 0:
+            return 0
+        if n == 1:
+            return 0
+
+        dp = [0] * n
+        dp[0] = 0
+        dp[1] = abs(height[1] - height[0])
+
+        for i in range(2, n):
+            jump_one = dp[i-1] + abs(height[i] - height[i-1])
+            jump_two = dp[i-2] + abs(height[i] - height[i-2])
+            dp[i] = min(jump_one, jump_two)
+
+        return dp[-1]
+
+# Example usage:
+height = [10, 30, 40, 20]
+solution = Solution()
+print(solution.frogJump(height))  # Expected output: 30
+```
+
+### Explanation of the Code:
+
+1. **Initialization**:
+   - `dp[0] = 0`: No cost to stand on the first stone.
+   - `dp[1] = abs(height[1] - height[0])`: Cost to jump from the first stone to the second stone.
+
+2. **Iterate through the array starting from the third stone**:
+   - For each stone \(i\), calculate the cost to jump from the \((i-1)\)th stone and from the \((i-2)\)th stone.
+   - The minimum of these two values will be the cost to reach the \(i\)th stone.
+
+3. **Return the value at the last stone**:
+   - `dp[-1]` gives the minimum cost to reach the last stone.
+
+This dynamic programming approach ensures that we efficiently calculate the minimum cost in \(O(n)\) time with \(O(n)\) space complexity.
+
+Sure, let's consider a more general version of the Frog Jump problem where the frog can jump up to \(K\) stones ahead.
+
+### Problem Definition:
+Given an array `height` of length \(n\) where `height[i]` represents the height of the \(i\)th stone, and an integer \(K\) representing the maximum distance the frog can jump, find the minimum cost to reach the last stone starting from the first stone. The cost of a jump is the absolute difference in heights between the stones.
+
+### Approach:
+We can use dynamic programming to solve this problem. We define `dp[i]` as the minimum cost to reach the \(i\)th stone. The recurrence relation will be:
+
+\[ \text{dp}[i] = \min(\text{dp}[j] + \left| \text{height}[i] - \text{height}[j] \right|) \]
+for all \(j\) where \( \max(0, i-K) \leq j < i \).
+
+### Implementation in Python:
+
+```python
+class Solution:
+    def frogJump(self, height, K):
+        n = len(height)
+        if n == 0:
+            return 0
+        if n == 1:
+            return 0
+        
+        dp = [float('inf')] * n
+        dp[0] = 0
+        
+        for i in range(1, n):
+            for j in range(1, K+1):
+                if i - j >= 0:
+                    dp[i] = min(dp[i], dp[i-j] + abs(height[i] - height[i-j]))
+        
+        return dp[-1]
+
+# Example usage:
+height = [10, 30, 40, 20]
+K = 2
+solution = Solution()
+print(solution.frogJump(height, K))  # Expected output: 30
+```
+
+### Explanation of the Code:
+
+1. **Initialization**:
+   - `dp` array is initialized to `float('inf')` except for `dp[0]`, which is `0` because there is no cost to stand on the first stone.
+
+2. **Iterate through each stone**:
+   - For each stone \(i\) (starting from the second stone), check all possible jumps \(j\) (from 1 to \(K\)) that lead to stone \(i\).
+   - Update `dp[i]` with the minimum cost found by considering jumps from any valid stone \(i-j\).
+
+3. **Return the value at the last stone**:
+   - `dp[-1]` gives the minimum cost to reach the last stone.
+
+This approach ensures that we efficiently calculate the minimum cost to reach the last stone while considering up to \(K\) possible jumps for each stone. The time complexity is \(O(nK)\) and the space complexity is \(O(n)\).
+
+Sure, let's break down the for loop in the dynamic programming solution for the frog jump problem with \(K\) distance in detail.
+
+### For Loop Explanation:
+
+Here is the relevant part of the code:
+
+```python
+for i in range(1, n):
+    for j in range(1, K+1):
+        if i - j >= 0:
+            dp[i] = min(dp[i], dp[i-j] + abs(height[i] - height[i-j]))
+```
+
+### Outer Loop: `for i in range(1, n)`
+
+This loop iterates over each stone starting from the second stone (index 1) to the last stone (index \(n-1\)).
+
+- **Purpose**: To compute the minimum cost to reach each stone \(i\) from the starting stone.
+- **Range**: `i` goes from 1 to \(n-1\).
+
+### Inner Loop: `for j in range(1, K+1)`
+
+This loop iterates over the possible jumps the frog can make to reach the current stone \(i\).
+
+- **Purpose**: To consider each possible jump distance \(j\) from stone \(i-j\) to stone \(i\), and update the minimum cost to reach stone \(i\).
+- **Range**: `j` goes from 1 to \(K\).
+
+### Condition: `if i - j >= 0`
+
+This condition checks if the jump \(j\) from the current stone \(i\) is valid (i.e., it doesn't jump to a negative index).
+
+- **Purpose**: To ensure that the frog does not jump to an invalid (negative) index.
+- **Check**: `i - j` must be greater than or equal to 0.
+
+### Update Statement: `dp[i] = min(dp[i], dp[i-j] + abs(height[i] - height[i-j]))`
+
+This line updates the minimum cost to reach stone \(i\).
+
+- **`dp[i]`**: The current minimum cost to reach stone \(i\).
+- **`dp[i-j]`**: The minimum cost to reach the stone \(i-j\).
+- **`abs(height[i] - height[i-j])`**: The cost to jump from stone \(i-j\) to stone \(i\) (absolute difference in their heights).
+- **`min(dp[i], dp[i-j] + abs(height[i] - height[i-j]))`**: We update `dp[i]` to the minimum value between the current `dp[i]` and the cost to jump from `i-j` to `i`.
+
+### Step-by-Step Execution with Example:
+
+Let's go through an example with `height = [10, 30, 40, 20]` and \(K = 2\).
+
+1. **Initialization**:
+   ```python
+   dp = [0, inf, inf, inf]
+   ```
+
+2. **First Iteration (i = 1)**:
+   - **Inner Loop (j = 1)**:
+     - Check if `1 - 1 >= 0` (true).
+     - Update `dp[1] = min(dp[1], dp[0] + abs(30 - 10)) = min(inf, 0 + 20) = 20`.
+   - **Inner Loop (j = 2)**: (skipped, as `1 - 2 < 0`)
+   - Result after first iteration:
+     ```python
+     dp = [0, 20, inf, inf]
+     ```
+
+3. **Second Iteration (i = 2)**:
+   - **Inner Loop (j = 1)**:
+     - Check if `2 - 1 >= 0` (true).
+     - Update `dp[2] = min(dp[2], dp[1] + abs(40 - 30)) = min(inf, 20 + 10) = 30`.
+   - **Inner Loop (j = 2)**:
+     - Check if `2 - 2 >= 0` (true).
+     - Update `dp[2] = min(dp[2], dp[0] + abs(40 - 10)) = min(30, 0 + 30) = 30`.
+   - Result after second iteration:
+     ```python
+     dp = [0, 20, 30, inf]
+     ```
+
+4. **Third Iteration (i = 3)**:
+   - **Inner Loop (j = 1)**:
+     - Check if `3 - 1 >= 0` (true).
+     - Update `dp[3] = min(dp[3], dp[2] + abs(20 - 40)) = min(inf, 30 + 20) = 50`.
+   - **Inner Loop (j = 2)**:
+     - Check if `3 - 2 >= 0` (true).
+     - Update `dp[3] = min(dp[3], dp[1] + abs(20 - 30)) = min(50, 20 + 10) = 30`.
+   - Result after third iteration:
+     ```python
+     dp = [0, 20, 30, 30]
+     ```
+
+### Final Result:
+
+The value at `dp[n-1]` (i.e., `dp[3]`) gives the minimum cost to reach the last stone, which is `30`.
+
+Let's use the Frog Jump problem approach with the given array `height = [10, 20, 30, 10, 60, 70]` and assume \( K = 2 \), which means the frog can jump up to 2 stones ahead. We will use dynamic programming to determine the minimum cost to reach the last stone.
+
+### Approach:
+1. **Initialization**:
+   - `dp[i]` will store the minimum cost to reach stone \(i\).
+
+2. **Recurrence Relation**:
+   - For each stone \(i\), the frog can jump from any of the last \(K\) stones: \(i-1\), \(i-2\), etc.
+   - Update `dp[i]` as follows:
+     \[
+     dp[i] = \min(dp[i-j] + \left| \text{height}[i] - \text{height}[i-j] \right|) \text{ for } j = 1 \text{ to } K \text{ if } i-j \geq 0
+     \]
+
+3. **Base Case**:
+   - `dp[0] = 0` (no cost to stand on the first stone).
+
+### Step-by-Step Execution:
+
+1. **Initialize the `dp` Array**:
+   ```python
+   height = [10, 20, 30, 10, 60, 70]
+   K = 2
+   n = len(height)
+   dp = [float('inf')] * n
+   dp[0] = 0
+   ```
+
+2. **Iterate through Each Stone**:
+   - **For i = 1**:
+     - **Inner Loop (j = 1)**:
+       - Update `dp[1] = min(dp[1], dp[0] + abs(20 - 10)) = min(inf, 0 + 10) = 10`
+     - Result after processing stone 1:
+       ```python
+       dp = [0, 10, inf, inf, inf, inf]
+       ```
+
+   - **For i = 2**:
+     - **Inner Loop (j = 1)**:
+       - Update `dp[2] = min(dp[2], dp[1] + abs(30 - 20)) = min(inf, 10 + 10) = 20`
+     - **Inner Loop (j = 2)**:
+       - Update `dp[2] = min(dp[2], dp[0] + abs(30 - 10)) = min(20, 0 + 20) = 20`
+     - Result after processing stone 2:
+       ```python
+       dp = [0, 10, 20, inf, inf, inf]
+       ```
+
+   - **For i = 3**:
+     - **Inner Loop (j = 1)**:
+       - Update `dp[3] = min(dp[3], dp[2] + abs(10 - 30)) = min(inf, 20 + 20) = 40`
+     - **Inner Loop (j = 2)**:
+       - Update `dp[3] = min(dp[3], dp[1] + abs(10 - 20)) = min(40, 10 + 10) = 20`
+     - Result after processing stone 3:
+       ```python
+       dp = [0, 10, 20, 20, inf, inf]
+       ```
+
+   - **For i = 4**:
+     - **Inner Loop (j = 1)**:
+       - Update `dp[4] = min(dp[4], dp[3] + abs(60 - 10)) = min(inf, 20 + 50) = 70`
+     - **Inner Loop (j = 2)**:
+       - Update `dp[4] = min(dp[4], dp[2] + abs(60 - 30)) = min(70, 20 + 30) = 50`
+     - Result after processing stone 4:
+       ```python
+       dp = [0, 10, 20, 20, 50, inf]
+       ```
+
+   - **For i = 5**:
+     - **Inner Loop (j = 1)**:
+       - Update `dp[5] = min(dp[5], dp[4] + abs(70 - 60)) = min(inf, 50 + 10) = 60`
+     - **Inner Loop (j = 2)**:
+       - Update `dp[5] = min(dp[5], dp[3] + abs(70 - 10)) = min(60, 20 + 60) = 60`
+     - Result after processing stone 5:
+       ```python
+       dp = [0, 10, 20, 20, 50, 60]
+       ```
+
+### Final Result:
+
+The minimum cost to reach the last stone (stone 5) is stored in `dp[5]`, which is `60`.
+
+### Final Python Code:
+
+Here's the complete code implementing this approach:
+
+```python
+class Solution:
+    def frogJump(self, height, K):
+        n = len(height)
+        if n == 0:
+            return 0
+        if n == 1:
+            return 0
+        
+        dp = [float('inf')] * n
+        dp[0] = 0
+        
+        for i in range(1, n):
+            for j in range(1, K+1):
+                if i - j >= 0:
+                    dp[i] = min(dp[i], dp[i-j] + abs(height[i] - height[i-j]))
+        
+        return dp[-1]
+
+# Example usage:
+height = [10, 20, 30, 10, 60, 70]
+K = 2
+solution = Solution()
+print(solution.frogJump(height, K))  # Expected output: 60
+```
+
+### Explanation:
+- The `dp` array is updated iteratively based on the costs of jumps from valid previous stones.
+- The final result in `dp[n-1]` gives the minimum cost to reach the last stone, which, in this example, is `60`.
+
+Sure, let's delve into the problem of finding the maximum sum of non-adjacent elements in an array step by step.
+
+### Problem Statement:
+Given an array of integers, find the maximum sum of its elements such that no two elements considered for the sum are adjacent in the array.
+
+### Example:
+Consider the array `arr = [3, 2, 7, 10]`.
+
+- If you choose 3, you cannot choose 2.
+- If you choose 2, you can choose 7 and 10 (but not 3).
+- If you choose 7, you cannot choose 2 and 10.
+- If you choose 10, you cannot choose 7.
+
+The goal is to maximize the sum under these constraints.
+
+### Approach:
+We can use dynamic programming to solve this problem efficiently.
+
+### Dynamic Programming Solution:
+1. **Define the State:**
+   - Let `dp[i]` be the maximum sum we can achieve considering the first \(i\) elements of the array without selecting two adjacent elements.
+
+2. **Base Cases:**
+   - `dp[0]` = `arr[0]` (If there is only one element, the maximum sum is the element itself).
+   - `dp[1]` = `max(arr[0], arr[1])` (For the first two elements, the maximum sum is the maximum of the two elements since we can't pick both).
+
+3. **Recurrence Relation:**
+   - For each element \(i\) from 2 to \(n-1\):
+     - We have two options: either include `arr[i]` in our sum or exclude it.
+     - If we include `arr[i]`, then the previous element `arr[i-1]` cannot be included, so we add `arr[i]` to `dp[i-2]`.
+     - If we exclude `arr[i]`, then the sum is just `dp[i-1]`.
+     - Thus, the relation is: `dp[i] = max(dp[i-1], arr[i] + dp[i-2])`.
+
+4. **Final Result:**
+   - The value `dp[n-1]` will give the maximum sum of non-adjacent elements.
+
+### Implementation in Python:
+Here’s how we can implement this approach:
+
+```python
+def max_sum_non_adjacent(arr):
+    n = len(arr)
+    
+    # Base cases
+    if n == 0:
+        return 0
+    if n == 1:
+        return arr[0]
+    
+    # Initialize dp array
+    dp = [0] * n
+    dp[0] = arr[0]
+    dp[1] = max(arr[0], arr[1])
+    
+    # Fill dp array using the recurrence relation
+    for i in range(2, n):
+        dp[i] = max(dp[i-1], arr[i] + dp[i-2])
+    
+    # The last element of dp array contains the result
+    return dp[-1]
+
+# Example usage
+arr = [3, 2, 7, 10]
+print(max_sum_non_adjacent(arr))  # Output: 13 (3 + 10)
+```
+
+### Explanation:
+1. **Initialization:**
+   - `dp[0] = arr[0]` because the maximum sum considering only the first element is the element itself.
+   - `dp[1] = max(arr[0], arr[1])` because with two elements, the maximum sum is the greater of the two (since we cannot pick both).
+
+2. **Filling the DP Table:**
+   - For each element from index 2 to \(n-1\), we decide whether to include the current element in the sum.
+   - If we include `arr[i]`, we add its value to the maximum sum up to `arr[i-2]` (because we skip `arr[i-1]`).
+   - If we exclude `arr[i]`, the maximum sum up to `arr[i]` is the same as the maximum sum up to `arr[i-1]`.
+
+3. **Result:**
+   - The result is found in `dp[n-1]`, which represents the maximum sum of non-adjacent elements in the array.
+
+This dynamic programming approach ensures we find the optimal solution in \(O(n)\) time with \(O(n)\) space complexity.
+
+Sure! Here is the problem statement for the House Robber problem:
+
+### House Robber Problem Statement:
+
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. The only constraint stopping you from robbing each of them is that adjacent houses have security systems connected, and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array `nums` representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+
+### Example:
+
+**Example 1:**
+```
+Input: nums = [1,2,3,1]
+Output: 4
+Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+             Total amount you can rob = 1 + 3 = 4.
+```
+
+**Example 2:**
+```
+Input: nums = [2,7,9,3,1]
+Output: 12
+Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 5 (money = 1).
+             Total amount you can rob = 2 + 9 + 1 = 12.
+```
+
+### Constraints:
+- `1 <= nums.length <= 100`
+- `0 <= nums[i] <= 400`
+
+### Approach:
+
+To solve this problem, we can use dynamic programming. The idea is to keep track of the maximum amount of money that can be robbed up to each house, without robbing two adjacent houses. Here's the plan:
+
+1. **Define State:**
+   - Let `dp[i]` be the maximum amount of money that can be robbed from the first \(i+1\) houses.
+
+2. **Recurrence Relation:**
+   - For each house \(i\), you have two options:
+     - Do not rob the current house \(i\), then `dp[i] = dp[i-1]`.
+     - Rob the current house \(i\), then add the value of the current house to the maximum amount that can be robbed up to the house \(i-2\), i.e., `dp[i] = nums[i] + dp[i-2]`.
+   - Combine these two options: `dp[i] = max(dp[i-1], nums[i] + dp[i-2])`.
+
+3. **Base Cases:**
+   - `dp[0] = nums[0]`: If there's only one house, rob it.
+   - `dp[1] = max(nums[0], nums[1])`: For the first two houses, rob the one with the most money.
+
+4. **Final Result:**
+   - The value `dp[n-1]` will give the maximum amount of money that can be robbed from all the houses.
+
+The solution can be implemented in Python as follows:
+
+```python
+def rob(nums):
+    n = len(nums)
+    if n == 0:
+        return 0
+    if n == 1:
+        return nums[0]
+    
+    # Initialize dp array
+    dp = [0] * n
+    dp[0] = nums[0]
+    dp[1] = max(nums[0], nums[1])
+    
+    # Fill dp array using the recurrence relation
+    for i in range(2, n):
+        dp[i] = max(dp[i-1], nums[i] + dp[i-2])
+    
+    # The last element of dp array contains the result
+    return dp[-1]
+
+# Example usage
+nums1 = [1, 2, 3, 1]
+print(rob(nums1))  # Output: 4
+
+nums2 = [2, 7, 9, 3, 1]
+print(rob(nums2))  # Output: 12
+```
+
+This dynamic programming approach ensures that the optimal solution is found in \(O(n)\) time complexity with \(O(n)\) space complexity.
