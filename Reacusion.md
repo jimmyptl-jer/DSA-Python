@@ -446,3 +446,148 @@ One subsequence of array [1, 2, 1] whose sum equals 2:
 ```
 
 The function stops searching after finding and printing the first valid subsequence.
+
+To count the number of subsequences whose sum equals a given value \( K \) using recursion, you can follow a similar approach as before, but instead of printing the subsequences or returning a flag, the function will return the count of valid subsequences.
+
+Here's how you can implement it:
+
+### Implementation
+
+```python
+def count_subsequences_sum_k(arr, index, current_sum, target_sum):
+    """
+    Recursive function to count the number of subsequences of an array whose sum equals target_sum.
+
+    Parameters:
+    - arr: The input array
+    - index: Current index in the array
+    - current_sum: The sum of the current subsequence
+    - target_sum: The target sum for the subsequence
+
+    Returns:
+    - int: The count of subsequences whose sum equals target_sum
+    """
+    # Base case: If index reaches the end of array
+    if index == len(arr):
+        if current_sum == target_sum:
+            return 1
+        else:
+            return 0
+
+    # Case 1: Include current element in the subsequence
+    include_count = count_subsequences_sum_k(arr, index + 1, current_sum + arr[index], target_sum)
+    
+    # Case 2: Exclude current element from the subsequence
+    exclude_count = count_subsequences_sum_k(arr, index + 1, current_sum, target_sum)
+
+    # Total count is the sum of both cases
+    return include_count + exclude_count
+
+# Example usage
+arr = [1, 2, 1]
+target_sum = 2
+print(f"Number of subsequences of array {arr} whose sum equals {target_sum}:")
+result = count_subsequences_sum_k(arr, 0, 0, target_sum)
+print(result)
+```
+
+### Explanation:
+
+1. **Function Definition**:
+   - `count_subsequences_sum_k(arr, index, current_sum, target_sum)`: A recursive function that counts the number of subsequences of the array `arr` whose sum equals `target_sum`.
+
+2. **Parameters**:
+   - `arr`: The input array from which subsequences are generated.
+   - `index`: Current index in the array. It starts from 0 and progresses through the length of the array.
+   - `current_sum`: The sum of the current subsequence.
+   - `target_sum`: The target sum for the subsequence.
+
+3. **Base Case**:
+   - `if index == len(arr):`
+     - When the `index` equals the length of `arr`, it means all elements have been processed. If the `current_sum` equals the `target_sum`, return 1 (indicating one valid subsequence found). Otherwise, return 0.
+
+4. **Recursive Cases**:
+   - **Case 1: Include current element in the subsequence**:
+     - Recursively call `count_subsequences_sum_k` with the next index (`index + 1`) and updated `current_sum` (`current_sum + arr[index]`).
+     - Store the result in `include_count`.
+
+   - **Case 2: Exclude current element from the subsequence**:
+     - Recursively call `count_subsequences_sum_k` with the next index (`index + 1`) and unchanged `current_sum`.
+     - Store the result in `exclude_count`.
+
+5. **Combine Results**:
+   - The total count of valid subsequences is the sum of `include_count` and `exclude_count`.
+
+### Example Output:
+For the array `[1, 2, 1]` and target sum `2`, the function `count_subsequences_sum_k` will count the number of subsequences whose sum equals 2:
+```
+Number of subsequences of array [1, 2, 1] whose sum equals 2:
+2
+```
+
+This approach systematically explores all possible combinations of elements to count the subsequences of the array that meet the specified sum using recursion.
+
+Yes, you can use a counter variable to keep track of the number of valid subsequences found. Here, we will use a helper function that increments a counter when a valid subsequence is found. 
+
+Here's the implementation:
+
+### Implementation
+
+```python
+def count_subsequences_sum_k(arr, index, current_sum, target_sum, counter):
+    """
+    Recursive function to count the number of subsequences of an array whose sum equals target_sum.
+
+    Parameters:
+    - arr: The input array
+    - index: Current index in the array
+    - current_sum: The sum of the current subsequence
+    - target_sum: The target sum for the subsequence
+    - counter: List with one integer element to keep the count of valid subsequences
+    """
+    # Base case: If index reaches the end of array
+    if index == len(arr):
+        if current_sum == target_sum:
+            counter[0] += 1
+        return
+    
+    # Case 1: Include current element in the subsequence
+    count_subsequences_sum_k(arr, index + 1, current_sum + arr[index], target_sum, counter)
+    
+    # Case 2: Exclude current element from the subsequence
+    count_subsequences_sum_k(arr, index + 1, current_sum, target_sum, counter)
+
+# Example usage
+arr = [1, 2, 1]
+target_sum = 2
+print(f"Number of subsequences of array {arr} whose sum equals {target_sum}:")
+counter = [0]
+count_subsequences_sum_k(arr, 0, 0, target_sum, counter)
+print(counter[0])
+```
+
+### Explanation:
+
+1. **Additional Parameter**:
+   - `counter`: A list with one integer element. This serves as a mutable counter to keep track of the number of valid subsequences found. We use a list to maintain mutability across recursive calls.
+
+2. **Base Case**:
+   - When the `index` equals the length of `arr`, the function checks if the `current_sum` equals the `target_sum`. If the condition is met, it increments the counter (`counter[0] += 1`).
+
+3. **Recursive Cases**:
+   - **Case 1: Include the current element in the subsequence**:
+     - Recursively call `count_subsequences_sum_k` with the next index (`index + 1`) and updated `current_sum` (`current_sum + arr[index]`).
+
+   - **Case 2: Exclude the current element from the subsequence**:
+     - Recursively call `count_subsequences_sum_k` with the next index (`index + 1`) and unchanged `current_sum`.
+
+4. **Example Execution**:
+   - For the array `[1, 2, 1]` and target sum `2`, the function `count_subsequences_sum_k` will count the number of subsequences whose sum equals 2.
+
+### Example Output:
+```
+Number of subsequences of array [1, 2, 1] whose sum equals 2:
+2
+```
+
+This approach uses a mutable counter variable to keep track of the number of valid subsequences found during the recursion. The counter is updated whenever a valid subsequence is encountered, and the final count is printed after the recursion completes.
