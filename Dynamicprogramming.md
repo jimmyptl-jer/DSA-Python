@@ -760,3 +760,579 @@ print(rob(nums2))  # Output: 12
 ```
 
 This dynamic programming approach ensures that the optimal solution is found in \(O(n)\) time complexity with \(O(n)\) space complexity.
+
+To solve the problem of counting the number of unique paths in a grid from the top-left corner to the bottom-right corner, where you can only move either down or right at any point in time, we can use dynamic programming.
+
+### Problem Recap
+You are given a grid with `m` rows and `n` columns. You start at the top-left corner (cell `(0, 0)`) and you want to reach the bottom-right corner (cell `(m-1, n-1)`). You can only move down or right at any point in time. Your task is to find out how many unique paths there are from the start to the destination.
+
+### Solution Explanation
+We will use a 2D array `dp` where `dp[i][j]` represents the number of unique paths to reach cell `(i, j)` from the starting cell `(0, 0)`.
+
+### Steps:
+
+1. **Initialization:**
+   - `dp[0][0] = 1` because there is exactly one way to be at the start cell (doing nothing).
+   - For the first row, `dp[0][j] = 1` for all `j` because the only way to move in the first row is by moving right.
+   - For the first column, `dp[i][0] = 1` for all `i` because the only way to move in the first column is by moving down.
+
+2. **Filling the DP Table:**
+   - For each cell `(i, j)`, the number of ways to get there is the sum of the number of ways to get to the cell directly above it `(i-1, j)` and the number of ways to get to the cell directly to the left of it `(i, j-1)`.
+   - Therefore, `dp[i][j] = dp[i-1][j] + dp[i][j-1]`.
+
+3. **Result:**
+   - The value at `dp[m-1][n-1]` will be our answer, i.e., the number of unique paths to reach the bottom-right corner.
+
+Here's the Python implementation:
+
+```python
+def unique_paths(m, n):
+    # Create a 2D DP array initialized to 0
+    dp = [[0] * n for _ in range(m)]
+
+    # Initialize the first row and first column
+    for i in range(m):
+        dp[i][0] = 1
+    for j in range(n):
+        dp[0][j] = 1
+
+    # Fill the DP table
+    for i in range(1, m):
+        for j in range(1, n):
+            dp[i][j] = dp[i-1][j] + dp[i][j-1]
+
+    return dp[m-1][n-1]
+
+# Example usage:
+m, n = 3, 7
+print(unique_paths(m, n))  # Output: 28
+```
+
+### Example
+
+Let's go through a small example:
+
+#### Input
+- `m = 3`
+- `n = 3`
+
+#### Initialization
+```
+1 1 1
+1 0 0
+1 0 0
+```
+
+#### Filling the DP Table
+- For cell `(1, 1)`: `dp[1][1] = dp[0][1] + dp[1][0] = 1 + 1 = 2`
+- For cell `(1, 2)`: `dp[1][2] = dp[0][2] + dp[1][1] = 1 + 2 = 3`
+- For cell `(2, 1)`: `dp[2][1] = dp[1][1] + dp[2][0] = 2 + 1 = 3`
+- For cell `(2, 2)`: `dp[2][2] = dp[1][2] + dp[2][1] = 3 + 3 = 6`
+
+#### Resulting DP Table
+```
+1 1 1
+1 2 3
+1 3 6
+```
+
+The number of unique paths from `(0, 0)` to `(2, 2)` is `6`.
+
+### Conclusion
+This dynamic programming approach ensures that we compute the number of unique paths efficiently in \(O(m \times n)\) time complexity, with \(O(m \times n)\) space complexity for the DP table.
+
+Based on the problem statement and the example provided in the image, let's walk through the solution to find the number of unique paths in an N x M grid with obstacles.
+
+### Problem Explanation
+
+You are given an `N x M` grid where:
+- `0` represents a non-blocked cell.
+- `-1` represents a blocked cell (no path possible through this cell).
+
+You need to count the total number of unique paths from the top-left corner of the maze to the bottom-right corner. At every cell, you can move either down or to the right.
+
+### Example
+
+Given the following grid:
+
+```
+0  0  0
+0 -1  0
+0  0  0
+```
+
+The goal is to find the number of unique paths from the top-left corner `(0, 0)` to the bottom-right corner `(2, 2)`.
+
+### Steps to Solve
+
+1. **Initialization**:
+   - If the start or end cell is blocked, return `0`.
+   - Initialize a DP table with the same dimensions as the grid.
+
+2. **Base Case**:
+   - Set the starting cell `dp[0][0]` to `1` if it's not blocked, otherwise `0`.
+
+3. **Fill the DP Table**:
+   - For the first row, if a cell is not blocked, it inherits the path count from its left neighbor.
+   - For the first column, if a cell is not blocked, it inherits the path count from the cell above.
+   - For other cells, if a cell is not blocked, its path count is the sum of the path counts from the cell above and the cell to the left.
+
+4. **Result**:
+   - The value at `dp[N-1][M-1]` is the number of unique paths to reach the bottom-right corner.
+
+### Python Implementation
+
+Here's the Python code to solve the problem:
+
+```python
+def unique_paths_with_obstacles(obstacleGrid):
+    # Get dimensions
+    m = len(obstacleGrid)
+    n = len(obstacleGrid[0])
+    
+    # If the starting or ending point is blocked, return 0
+    if obstacleGrid[0][0] == -1 or obstacleGrid[m-1][n-1] == -1:
+        return 0
+    
+    # Initialize the DP table
+    dp = [[0] * n for _ in range(m)]
+    
+    # Start from the top-left corner
+    dp[0][0] = 1 if obstacleGrid[0][0] == 0 else 0
+    
+    # Fill the first row
+    for j in range(1, n):
+        if obstacleGrid[0][j] == 0:
+            dp[0][j] = dp[0][j-1]
+    
+    # Fill the first column
+    for i in range(1, m):
+        if obstacleGrid[i][0] == 0:
+            dp[i][0] = dp[i-1][0]
+    
+    # Fill the rest of the dp table
+    for i in range(1, m):
+        for j in range(1, n):
+            if obstacleGrid[i][j] == 0:
+                dp[i][j] = dp[i-1][j] + dp[i][j-1]
+    
+    # The number of unique paths to the bottom-right corner
+    return dp[m-1][n-1]
+
+# Example usage
+obstacleGrid = [
+    [0, 0, 0],
+    [0, -1, 0],
+    [0, 0, 0]
+]
+
+print(unique_paths_with_obstacles(obstacleGrid))  # Output: 2
+```
+
+### Explanation of the Code
+
+1. **Initialization**:
+   - The `dp` array is initialized with zeros. The starting cell `dp[0][0]` is set to `1` if it's not blocked.
+
+2. **First Row and Column**:
+   - For the first row, if a cell is not blocked (`obstacleGrid[0][j] == 0`), it inherits the value from its left neighbor.
+   - For the first column, if a cell is not blocked (`obstacleGrid[i][0] == 0`), it inherits the value from the cell above it.
+
+3. **Filling the DP Table**:
+   - For each cell `(i, j)`, if the cell is not blocked, its value is the sum of the values from the cell above (`dp[i-1][j]`) and the cell to the left (`dp[i][j-1]`).
+
+4. **Result**:
+   - The value in `dp[m-1][n-1]` represents the number of unique paths to reach the bottom-right corner.
+
+This approach ensures that we correctly account for obstacles and only consider valid paths through the grid.
+
+Certainly! Let's go through the example provided step-by-step to understand how the solution works.
+
+### Example Grid
+We are given the following grid:
+```
+0  0  0
+0 -1  0
+0  0  0
+```
+Here, `0` represents a non-blocked cell, and `-1` represents a blocked cell. We need to find the number of unique paths from the top-left corner `(0, 0)` to the bottom-right corner `(2, 2)`.
+
+### Step-by-Step Explanation
+
+1. **Initialization**:
+   - Determine the dimensions of the grid: `m = 3` (rows) and `n = 3` (columns).
+   - If the starting point `grid[0][0]` or the ending point `grid[m-1][n-1]` is blocked, return `0`. In this case, both are not blocked.
+
+2. **Create the DP Table**:
+   - Create a 2D list `dp` initialized to zeros with the same dimensions as the grid:
+     ```python
+     dp = [
+         [0, 0, 0],
+         [0, 0, 0],
+         [0, 0, 0]
+     ]
+     ```
+
+3. **Initialize the Starting Cell**:
+   - Set `dp[0][0]` to `1` because there is exactly one way to start at the beginning if it's not blocked:
+     ```python
+     dp[0][0] = 1
+     ```
+
+4. **Fill the First Row**:
+   - For each cell in the first row, if the cell is not blocked, it inherits the value from its left neighbor:
+     ```python
+     for j in range(1, n):
+         if obstacleGrid[0][j] == 0:
+             dp[0][j] = dp[0][j-1]
+     ```
+     After this step, the `dp` table looks like:
+     ```python
+     dp = [
+         [1, 1, 1],
+         [0, 0, 0],
+         [0, 0, 0]
+     ]
+     ```
+
+5. **Fill the First Column**:
+   - For each cell in the first column, if the cell is not blocked, it inherits the value from the cell above:
+     ```python
+     for i in range(1, m):
+         if obstacleGrid[i][0] == 0:
+             dp[i][0] = dp[i-1][0]
+     ```
+     After this step, the `dp` table looks like:
+     ```python
+     dp = [
+         [1, 1, 1],
+         [1, 0, 0],
+         [1, 0, 0]
+     ]
+     ```
+
+6. **Fill the Rest of the DP Table**:
+   - For each cell `(i, j)` not in the first row or column, if the cell is not blocked, its value is the sum of the values from the cell above (`dp[i-1][j]`) and the cell to the left (`dp[i][j-1]`):
+     ```python
+     for i in range(1, m):
+         for j in range(1, n):
+             if obstacleGrid[i][j] == 0:
+                 dp[i][j] = dp[i-1][j] + dp[i][j-1]
+     ```
+     Let's go through this step-by-step for our example:
+
+     - For cell `(1, 1)`, it is blocked (`-1`), so `dp[1][1] = 0`.
+     - For cell `(1, 2)`, it inherits from the left (`dp[1][1]` which is `0`) and from above (`dp[0][2]` which is `1`), so `dp[1][2] = 1`.
+     - For cell `(2, 1)`, it inherits from the left (`dp[2][0]` which is `1`) and from above (`dp[1][1]` which is `0`), so `dp[2][1] = 1`.
+     - For cell `(2, 2)`, it inherits from the left (`dp[2][1]` which is `1`) and from above (`dp[1][2]` which is `1`), so `dp[2][2] = 2`.
+
+     The final `dp` table looks like:
+     ```python
+     dp = [
+         [1, 1, 1],
+         [1, 0, 1],
+         [1, 1, 2]
+     ]
+     ```
+
+7. **Result**:
+   - The value at `dp[m-1][n-1]` is the number of unique paths to reach the bottom-right corner:
+     ```python
+     return dp[m-1][n-1]  # This is dp[2][2] which is 2
+     ```
+
+### Python Code
+
+Here's the complete Python code:
+
+```python
+def unique_paths_with_obstacles(obstacleGrid):
+    # Get dimensions
+    m = len(obstacleGrid)
+    n = len(obstacleGrid[0])
+    
+    # If the starting or ending point is blocked, return 0
+    if obstacleGrid[0][0] == -1 or obstacleGrid[m-1][n-1] == -1:
+        return 0
+    
+    # Initialize the DP table
+    dp = [[0] * n for _ in range(m)]
+    
+    # Start from the top-left corner
+    dp[0][0] = 1 if obstacleGrid[0][0] == 0 else 0
+    
+    # Fill the first row
+    for j in range(1, n):
+        if obstacleGrid[0][j] == 0:
+            dp[0][j] = dp[0][j-1]
+    
+    # Fill the first column
+    for i in range(1, m):
+        if obstacleGrid[i][0] == 0:
+            dp[i][0] = dp[i-1][0]
+    
+    # Fill the rest of the dp table
+    for i in range(1, m):
+        for j in range(1, n):
+            if obstacleGrid[i][j] == 0:
+                dp[i][j] = dp[i-1][j] + dp[i][j-1]
+    
+    # The number of unique paths to the bottom-right corner
+    return dp[m-1][n-1]
+
+# Example usage
+obstacleGrid = [
+    [0, 0, 0],
+    [0, -1, 0],
+    [0, 0, 0]
+]
+
+print(unique_paths_with_obstacles(obstacleGrid))  # Output: 2
+```
+
+This code correctly calculates the number of unique paths from the top-left corner to the bottom-right corner, considering the obstacles in the grid.
+
+This line of code initializes the starting point of a dynamic programming (DP) table used to compute the number of unique paths in a grid, considering obstacles. Here’s a breakdown of what it does:
+
+```python
+dp[0][0] = 1 if obstacleGrid[0][0] == 0 else 0
+```
+
+### Explanation:
+
+- **`dp[0][0]`**: This represents the number of ways to reach the cell at the top-left corner of the grid, which is the starting point.
+
+- **`obstacleGrid[0][0]`**: This checks the value of the cell at the top-left corner of the original grid (`obstacleGrid`). If this value is `0`, it means there is no obstacle in this cell. If it's `1`, it means there is an obstacle.
+
+- **`1 if obstacleGrid[0][0] == 0 else 0`**:
+  - **`1`**: If the starting cell (`obstacleGrid[0][0]`) is free of obstacles (`0`), then there is exactly one way to be in this cell (by starting there).
+  - **`0`**: If the starting cell contains an obstacle (`1`), then there is no way to start or proceed from this cell.
+
+### In Summary:
+The line initializes the number of unique paths to the starting cell (`dp[0][0]`). If the starting cell is not obstructed, it is initialized to `1`, indicating one possible way to be in that cell (starting there). If the starting cell is obstructed, it is set to `0`, meaning you cannot start there, so there are no valid paths from this point.
+
+The approach used in the code is **bottom-up**. Here's why:
+
+### Bottom-Up Approach
+
+1. **Initialization**:
+   - The DP table `dp` is initialized to keep track of the number of unique paths to each cell in the grid.
+   - The starting cell `dp[0][0]` is initialized first, and its value depends directly on the initial state of the grid cell `obstacleGrid[0][0]`.
+
+2. **Filling the Table**:
+   - The table is filled in a row-major order, starting from the top-left corner and moving towards the bottom-right corner.
+   - Each cell in the DP table `dp[i][j]` is filled based on the values of the cells directly above it (`dp[i-1][j]`) and to the left of it (`dp[i][j-1]`).
+
+3. **Final Result**:
+   - The final value, `dp[m-1][n-1]`, represents the number of unique paths to the bottom-right corner of the grid.
+
+### Top-Down Approach
+
+In a **top-down approach**, you would typically use recursion with memoization:
+
+1. **Recursion**:
+   - Start from the bottom-right corner and recursively calculate the number of unique paths to reach that cell from the starting cell.
+
+2. **Memoization**:
+   - Store the results of subproblems in a memoization table to avoid redundant calculations.
+
+### Example of Top-Down Approach (not implemented in the original code):
+
+```python
+def uniquePathsWithObstacles(obstacleGrid):
+    m, n = len(obstacleGrid), len(obstacleGrid[0])
+    memo = {}
+
+    def dp(i, j):
+        if i < 0 or j < 0 or obstacleGrid[i][j] == 1:
+            return 0
+        if i == 0 and j == 0:
+            return 1
+        if (i, j) in memo:
+            return memo[(i, j)]
+
+        memo[(i, j)] = dp(i - 1, j) + dp(i, j - 1)
+        return memo[(i, j)]
+
+    return dp(m - 1, n - 1)
+```
+
+In summary, the code you provided follows the **bottom-up dynamic programming approach**, where you build the solution from the base cases up to the final solution.
+
+Certainly! Let's break down the code in detail with an example to understand how the dynamic programming (DP) solution works for the "Ninja and his friends" problem.
+
+### Dynamic Programming Table Structure
+- We use a 3D DP table `dp` where `dp[r][c1][c2]` represents the maximum chocolates collected by Alice and Bob starting at row `r` with Alice in column `c1` and Bob in column `c2`.
+
+### Step-by-Step Explanation with Example
+
+#### Example Matrix:
+```python
+matrix = [
+    [3, 6, 8, 2],
+    [5, 2, 4, 3],
+    [1, 1, 20, 10],
+    [1, 1, 20, 10]
+]
+```
+
+#### Initialization:
+1. **Base Case**:
+   For the last row (n-1), if Alice and Bob are in the same column, count the chocolates once. Otherwise, sum the chocolates from both cells.
+   ```python
+   for j1 in range(m):
+       for j2 in range(m):
+           if j1 == j2:
+               dp[n-1][j1][j2] = matrix[n-1][j1]
+           else:
+               dp[n-1][j1][j2] = matrix[n-1][j1] + matrix[n-1][j2]
+   ```
+   After this step, `dp[3][j1][j2]` will be:
+   ```
+   [
+    [1, 2, 21, 11],
+    [2, 1, 21, 11],
+    [21, 21, 20, 30],
+    [11, 11, 30, 10]
+   ]
+   ```
+
+2. **Filling the DP Table**:
+   We fill the table starting from the second last row up to the first row.
+
+#### Transition:
+1. **Iterate from the second last row to the first row**:
+   ```python
+   for i in range(n-2, -1, -1):
+       for j1 in range(m):
+           for j2 in range(m):
+   ```
+
+2. **Calculate Maximum Chocolates for Each Cell**:
+   For each cell `(i, j1, j2)`, consider all possible moves for Alice and Bob:
+   ```python
+   max_choco = float('-inf')
+   for dj1 in [-1, 0, 1]:
+       for dj2 in [-1, 0, 1]:
+           if 0 <= j1 + dj1 < m and 0 <= j2 + dj2 < m:
+   ```
+
+3. **Update the DP Table**:
+   Calculate the chocolates collected if Alice and Bob move to new positions `(j1 + dj1, j2 + dj2)`:
+   ```python
+   if j1 == j2:
+       ans = matrix[i][j1] + dp[i+1][j1+dj1][j2+dj2]
+   else:
+       ans = matrix[i][j1] + matrix[i][j2] + dp[i+1][j1+dj1][j2+dj2]
+   ```
+   If the new positions are out of bounds, we use a very small value (`-1e9`) to ensure it's not chosen:
+   ```python
+   else:
+       ans = -1e9
+   max_choco = max(max_choco, ans)
+   ```
+
+4. **Store the Maximum Chocolates Collected**:
+   Update `dp[i][j1][j2]`:
+   ```python
+   dp[i][j1][j2] = max_choco
+   ```
+
+5. **Return the Result**:
+   The result is stored in `dp[0][0][m-1]`:
+   ```python
+   return dp[0][0][m-1]
+   ```
+
+#### Detailed Step-by-Step Example:
+
+##### Last Row Initialization:
+```python
+matrix = [
+    [3, 6, 8, 2],
+    [5, 2, 4, 3],
+    [1, 1, 20, 10],
+    [1, 1, 20, 10]
+]
+```
+For `n-1` (row 3):
+```
+dp[3][j1][j2]:
+[
+    [1, 2, 21, 11],
+    [2, 1, 21, 11],
+    [21, 21, 20, 30],
+    [11, 11, 30, 10]
+]
+```
+
+##### Second Last Row:
+For row 2:
+- `(2, 0, 0)`: Alice and Bob in the same column.
+  ```python
+  dp[2][0][0] = matrix[2][0] + dp[3][1][1] = 1 + 1 = 2
+  ```
+
+- `(2, 0, 1)`: Alice in column 0, Bob in column 1.
+  ```python
+  dp[2][0][1] = matrix[2][0] + matrix[2][1] + dp[3][0][0] = 1 + 1 + 2 = 4
+  ```
+
+Repeat this process for all combinations of `(j1, j2)` for row 2.
+
+##### First Row:
+Repeat the same process for row 1 and row 0.
+
+Finally, return `dp[0][0][m-1]` which contains the maximum chocolates collected.
+
+### Final Code:
+```python
+class Solution:
+    def solve(self, n, m, grid):
+        if not grid or not grid[0]:
+            return 0
+        
+        # Initialize the DP table
+        dp = [[[0 for _ in range(m)] for _ in range(m)] for _ in range(n)]
+        
+        # Base case: Fill the last row
+        for j1 in range(m):
+            for j2 in range(m):
+                if j1 == j2:
+                    dp[n-1][j1][j2] = grid[n-1][j1]
+                else:
+                    dp[n-1][j1][j2] = grid[n-1][j1] + grid[n-1][j2]
+        
+        # Fill the DP table
+        for i in range(n-2, -1, -1):
+            for j1 in range(m):
+                for j2 in range(m):
+                    max_choco = float('-inf')
+                    
+                    for dj1 in [-1, 0, 1]:
+                        for dj2 in [-1, 0, 1]:
+                            if 0 <= j1 + dj1 < m and 0 <= j2 + dj2 < m:
+                                if j1 == j2:
+                                    ans = grid[i][j1] + dp[i+1][j1+dj1][j2+dj2]
+                                else:
+                                    ans = grid[i][j1] + grid[i][j2] + dp[i+1][j1+dj1][j2+dj2]
+                            else:
+                                ans = -1e9
+                            max_choco = max(max_choco, ans)
+                    
+                    dp[i][j1][j2] = max_choco
+        
+        return dp[0][0][m-1]
+
+# Example usage
+matrix = [
+    [3, 6, 8, 2],
+    [5, 2, 4, 3],
+    [1, 1, 20, 10],
+    [1, 1, 20, 10]
+]
+solution = Solution()
+print(solution.solve(4, 4, matrix))  # Expected output: maximum chocolates collected by Alice and Bob
+```
+
+This code ensures the expected time complexity \( O(n \times m \times m) \) and space complexity \( O(n \times m \times m) \).
